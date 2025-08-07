@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnapCart - Premium Clothing</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .cart-icon {
+            position: relative;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .cart-icon:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Page Content */
+        .page {
+            display: none;
+            padding: 2rem 0;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Home Page */
+        .hero {
+            text-align: center;
+            padding: 4rem 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            margin: 2rem 0;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: #666;
+        }
+
+        .cta-button {
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        /* Product Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .product-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .product-price {
+            font-size: 1.5rem;
+            color: #667eea;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .add-to-cart {
+            width: 100%;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .add-to-cart:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* About Page */
+        .about-content {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 3rem;
+            border-radius: 20px;
+            margin: 2rem 0;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .about-content h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .about-content p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            color: #555;
+        }
+
+        /* Contact Page */
+        .contact-form {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 3rem;
+            border-radius: 20px;
+            margin: 2rem 0;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e1e1e1;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* Cart Modal */
+        .cart-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .cart-content {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 70%;
+            overflow-y: auto;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .close-cart {
+            float: right;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .products-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav>
+                <div class="logo">SnapCart</div>
+                <ul class="nav-links">
+                    <li><a href="#" class="nav-link active" data-page="home">Home</a></li>
+                    <li><a href="#" class="nav-link" data-page="products">Products</a></li>
+                    <li><a href="#" class="nav-link" data-page="about">About</a></li>
+                    <li><a href="#" class="nav-link" data-page="contact">Contact</a></li>
+                </ul>
+                <button class="cart-icon" id="cartBtn">
+                    Cart <span class="cart-count" id="cartCount">0</span>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Home Page -->
+        <div class="page active" id="home">
+            <section class="hero">
+                <h1>Welcome to SnapCart</h1>
+                <p>Discover premium clothing that defines your unique style</p>
+                <button class="cta-button" onclick="showPage('products')">Shop Now</button>
+            </section>
+            
+            <section class="featured-products">
+                <h2 style="text-align: center; margin: 2rem 0; font-size: 2rem; color: #333;">Featured Products</h2>
+                <div class="products-grid">
+                    <div class="product-card">
+                        <img src="https://images.unsplash.com/photo-1571455786673-9d9d6c194f90?w=400&h=300&fit=crop" alt="Classic White Shirt" class="product-image">
+                        <div class="product-info">
+                            <div class="product-name">Classic Black Shirt</div>
+                            <div class="product-price">$45</div>
+                            <button class="add-to-cart" onclick="addToCart('Classic White Shirt', 45)">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <img src="https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=300&fit=crop" alt="Denim Jacket" class="product-image">
+                        <div class="product-info">
+                            <div class="product-name">Denim Jacket</div>
+                            <div class="product-price">$79</div>
+                            <button class="add-to-cart" onclick="addToCart('Denim Jacket', 79)">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div class="product-card">
+                        <img src="https://images.unsplash.com/photo-1594633313593-bab3825d0caf?w=400&h=300&fit=crop" alt="Summer Dress" class="product-image">
+                        <div class="product-info">
+                            <div class="product-name">Summer Dress</div>
+                            <div class="product-price">$65</div>
+                            <button class="add-to-cart" onclick="addToCart('Summer Dress', 65)">Add to Cart</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Products Page -->
+        <div class="page" id="products">
+            <h1 style="text-align: center; margin: 2rem 0; font-size: 2.5rem; color: #333;">Our Products</h1>
+            <div class="products-grid">
+                <div class="product-card">
+                    <img src="https://images.unsplash.com/photo-1571455786673-9d9d6c194f90?w=400&h=300&fit=crop" alt="Classic White Shirt" class="product-image">
+                    <div class="product-info">
+                        <div class="product-name">Classic Black Shirt</div>
+                        <div class="product-price">$45</div>
+                        <button class="add-to-cart" onclick="addToCart('Classic White Shirt', 45)">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <img src="https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&h=300&fit=crop" alt="Denim Jacket" class="product-image">
+                    <div class="product-info">
+                        <div class="product-name">Denim Jacket</div>
+                        <div class="product-price">$79</div>
+                        <button class="add-to-cart" onclick="addToCart('Denim Jacket', 79)">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <img src="https://images.unsplash.com/photo-1594633313593-bab3825d0caf?w=400&h=300&fit=crop" alt="Summer Dress" class="product-image">
+                    <div class="product-info">
+                        <div class="product-name">Summer Dress</div>
+                        <div class="product-price">$65</div>
+                        <button class="add-to-cart" onclick="addToCart('Summer Dress', 65)">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <img src="data:image/webp;base64,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" alt="Casual T-Shirt" class="product-image">
+                    <div class="product-info">
+                        <div class="product-name">Casual T-Shirt</div>
+                        <div class="product-price">$25</div>
+                        <button class="add-to-cart" onclick="addToCart('Casual T-Shirt', 25)">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <img src="https://shop1kapparel.com/cdn/shop/files/BlackHoodie-Front.png?v=1729472232&width=713" alt="Black Hoodie" class="product-image">
+                    <div class="product-info">
+                        <div class="product-name">Black Hoodie</div>
+                        <div class="product-price">$55</div>
+                        <button class="add-to-cart" onclick="addToCart('Black Hoodie', 55)">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <img src="https://happygentleman.com/wp-content/uploads/2019/11/rosa-mens-classic-vintage-blazer-navy1-400x400.jpg" alt="Formal Blazer" class="product-image">
+                    <div class="product-info">
+                        <div class="product-name">Formal Blazer</div>
+                        <div class="product-price">$120</div>
+                        <button class="add-to-cart" onclick="addToCart('Formal Blazer', 120)">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <img src="https://images.unsplash.com/photo-1542272604-787c3835535d?w=400&h=300&fit=crop" alt="Casual Jeans" class="product-image">
+                    <div class="product-info">
+                        <div class="product-name">Casual Jeans</div>
+                        <div class="product-price">$85</div>
+                        <button class="add-to-cart" onclick="addToCart('Casual Jeans', 85)">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=400&h=300&fit=crop" alt="Knit Sweater" class="product-image">
+                    <div class="product-info">
+                        <div class="product-name">Knit Sweater</div>
+                        <div class="product-price">$68</div>
+                        <button class="add-to-cart" onclick="addToCart('Knit Sweater', 68)">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Page -->
+        <div class="page" id="about">
+            <div class="about-content">
+                <h2>About SnapCart</h2>
+                <p>SnapCart was founded with a simple mission: to provide high-quality, stylish clothing that empowers individuals to express their unique personality and confidence.</p>
+                
+                <p>Our journey began in 2020 when we noticed a gap in the market for affordable yet premium clothing that doesn't compromise on quality or style. We believe that great fashion should be accessible to everyone, regardless of budget or background.</p>
+                
+                <p>Every piece in our collection is carefully curated and designed with attention to detail, comfort, and durability. We work directly with skilled artisans and ethical manufacturers to ensure that every item meets our high standards while maintaining fair labor practices.</p>
+                
+                <p>At SnapCart, we're not just selling clothes – we're building a community of fashion-forward individuals who believe in expressing themselves through what they wear. Join us on this journey and discover your perfect style.</p>
+                
+                <h3 style="margin-top: 2rem; color: #667eea;">Our Values</h3>
+                <p><strong>Quality:</strong> We never compromise on the quality of materials and craftsmanship.</p>
+                <p><strong>Sustainability:</strong> We're committed to ethical production and environmental responsibility.</p>
+                <p><strong>Inclusivity:</strong> Fashion is for everyone, and our collections reflect diversity in all its forms.</p>
+                <p><strong>Innovation:</strong> We constantly evolve our designs to stay ahead of trends while maintaining timeless appeal.</p>
+            </div>
+        </div>
+
+        <!-- Contact Page -->
+        <div class="page" id="contact">
+            <div class="contact-form">
+                <h2 style="text-align: center; margin-bottom: 2rem; color: #333;">Get In Touch</h2>
+                <form>
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" name="subject" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="cta-button" style="width: 100%;">Send Message</button>
+                </form>
+                
+                <div style="margin-top: 3rem; text-align: center;">
+                    <h3 style="color: #333; margin-bottom: 1rem;">Other Ways to Reach Us</h3>
+                    <p><strong>Email:</strong> hello@SnapCart.com</p>
+                    <p><strong>Phone:</strong> +1 (555) 123-4567</p>
+                    <p><strong>Address:</strong> 123 Fashion Street, Style City, SC 12345</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Cart Modal -->
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-content">
+            <span class="close-cart" onclick="closeCart()">&times;</span>
+            <h2>Your Cart</h2>
+            <div id="cartItems"></div>
+            <div id="cartTotal" style="font-size: 1.2rem; font-weight: bold; margin: 1rem 0; text-align: right;"></div>
+            <button class="checkout-btn" onclick="checkout()">Checkout</button>
+        </div>
+    </div>
+
+    <script>
+        let cart = [];
+        let cartCount = 0;
+
+        // Navigation functionality
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Remove active class from all nav links
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            // Show selected page
+            document.getElementById(pageId).classList.add('active');
+            
+            // Add active class to clicked nav link
+            document.querySelector(`[data-page="${pageId}"]`).classList.add('active');
+        }
+
+        // Add event listeners to navigation links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const pageId = this.getAttribute('data-page');
+                showPage(pageId);
+            });
+        });
+
+        // Cart functionality
+        function addToCart(productName, price) {
+            const existingItem = cart.find(item => item.name === productName);
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({
+                    name: productName,
+                    price: price,
+                    quantity: 1
+                });
+            }
+            
+            cartCount++;
+            updateCartDisplay();
+            
+            // Show feedback
+            // alert(`${productName} added to cart!`);
+        }
+
+        function updateCartDisplay() {
+            document.getElementById('cartCount').textContent = cartCount;
+            
+            const cartItems = document.getElementById('cartItems');
+            cartItems.innerHTML = '';
+            
+            let total = 0;
+            
+            cart.forEach((item, index) => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                
+                cartItems.innerHTML += `
+                    <div class="cart-item">
+                        <div>
+                            <strong>${item.name}</strong><br>
+                            $${item.price} x ${item.quantity}
+                        </div>
+                        <div>
+                            <button onclick="removeFromCart(${index})" style="background: #ff4757; color: white; border: none; padding: 0.3rem 0.6rem; border-radius: 5px; cursor: pointer;">Remove</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            document.getElementById('cartTotal').textContent = `Total: $${total}`;
+        }
+
+        function removeFromCart(index) {
+            cartCount -= cart[index].quantity;
+            cart.splice(index, 1);
+            updateCartDisplay();
+        }
+
+        function showCart() {
+            document.getElementById('cartModal').style.display = 'flex';
+        }
+
+        function closeCart() {
+            document.getElementById('cartModal').style.display = 'none';
+        }
+
+        function checkout() {
+            if (cart.length === 0) {
+                // alert('Your cart is empty!');
+                return;
+            }
+            
+            // alert('Thank you for your purchase! Your order has been placed.');
+            cart = [];
+            cartCount = 0;
+            updateCartDisplay();
+            closeCart();
+        }
+
+        // Event listeners
+        document.getElementById('cartBtn').addEventListener('click', showCart);
+
+        // Contact form submission
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // alert('Thank you for your message! We\'ll get back to you soon.');
+            this.reset();
+        });
+
+        // Initialize cart display
+        updateCartDisplay();
+    </script>
+</body>
+</html>
